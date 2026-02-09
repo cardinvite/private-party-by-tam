@@ -2443,22 +2443,6 @@
             // Get elements
             const form = document.getElementById('rsvp-form');
             const successMsg = document.getElementById('rsvp-success');
-            const guestsOtherRadio = document.getElementById('guests-other');
-            const guestsOtherInput = document.getElementById('rsvp-guests-other');
-
-            // Show/hide "Other" guests input
-            const guestsRadios = document.querySelectorAll('input[name="guests"]');
-            guestsRadios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    if (guestsOtherRadio.checked) {
-                        guestsOtherInput.style.display = 'inline-block';
-                        guestsOtherInput.focus();
-                    } else {
-                        guestsOtherInput.style.display = 'none';
-                        guestsOtherInput.value = '';
-                    }
-                });
-            });
 
             // Clear error messages
             function clearErrors() {
@@ -2481,32 +2465,21 @@
                 clearErrors();
                 let isValid = true;
 
-                // Validate name
+                // Validate name (required)
                 const name = document.getElementById('rsvp-name').value.trim();
                 if (!name) {
                     showError('name', 'Please enter your full name');
                     isValid = false;
                 }
 
-                // Validate attendance
+                // Validate attendance (required)
                 const attendance = document.querySelector('input[name="attendance"]:checked');
                 if (!attendance) {
                     showError('attendance', 'Please select your attendance status');
                     isValid = false;
                 }
 
-                // Validate guests
-                const guests = document.querySelector('input[name="guests"]:checked');
-                if (!guests) {
-                    showError('guests', 'Please select number of guests');
-                    isValid = false;
-                } else if (guests.value === 'other') {
-                    const otherValue = guestsOtherInput.value;
-                    if (!otherValue || otherValue < 1) {
-                        showError('guests', 'Please enter a valid number of guests');
-                        isValid = false;
-                    }
-                }
+                // Phone is optional, no validation needed
 
                 return isValid;
             }
@@ -2515,11 +2488,9 @@
             const FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdodctQqaCAJZ0TFNDt7dXZUQrTH13P4lJxE0V0SCM-6mSLRA/formResponse";
 
             const ENTRY = {
-                name: "entry.1904944365",
-                phone: "entry.1259189299",
-                notes: "entry.851422672",
-                attendance: "entry.1950071841",
-                guests: "entry.122576163"
+                name: "entry.1904944365",       // Full Name
+                phone: "entry.1259189299",      // Phone Number
+                attendance: "entry.1950071841"  // Will you attend?
             };
 
             // Form submit
@@ -2537,7 +2508,7 @@
                 const nameValue = document.getElementById('rsvp-name').value.trim();
                 fd.append(ENTRY.name, nameValue);
 
-                // Phone (optional)
+                // Phone (optional but send it)
                 const phoneValue = document.getElementById('rsvp-phone').value.trim() || '';
                 fd.append(ENTRY.phone, phoneValue);
 
@@ -2548,28 +2519,11 @@
                     : "Sorry, I can't make it";
                 fd.append(ENTRY.attendance, attendanceValue);
 
-                // Guests: 1/2/3/Other
-                const guestsRadio = document.querySelector('input[name="guests"]:checked');
-                let guestsValue = guestsRadio.value;
-                if (guestsValue === 'other') {
-                    const otherValue = guestsOtherInput.value.trim();
-                    guestsValue = otherValue ? `Other: ${otherValue}` : 'Other';
-                } else {
-                    guestsValue = guestsRadio.value; // "1", "2", or "3"
-                }
-                fd.append(ENTRY.guests, guestsValue);
-
-                // Notes (optional)
-                const notesValue = document.getElementById('rsvp-notes').value.trim() || '';
-                fd.append(ENTRY.notes, notesValue);
-
                 // Log for debugging
                 console.log('📋 RSVP Submission:', {
                     name: nameValue,
                     phone: phoneValue,
-                    attendance: attendanceValue,
-                    guests: guestsValue,
-                    notes: notesValue
+                    attendance: attendanceValue
                 });
 
                 try {
