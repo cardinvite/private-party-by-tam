@@ -2540,8 +2540,13 @@
                     form.style.display = 'none';
                     successMsg.style.display = 'block';
 
-                    // Scroll to success message
-                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Scroll to Thank You section to show both success message and thank you text
+                    const thankYouSection = document.getElementById('thankyou');
+                    if (thankYouSection) {
+                        setTimeout(() => {
+                            thankYouSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 300);
+                    }
 
                 } catch (err) {
                     console.error('✗ RSVP submission failed:', err);
